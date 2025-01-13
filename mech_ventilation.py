@@ -1,20 +1,27 @@
 import pandas as pd
 
-# List of unique mechanical ventilation categories
-ventilation = [
-    'Invasive', 'NIV', 'NO'
-]
+def one_hot_encode(df, column):
+    """
+    Applies one-hot encoding to the specified column of the DataFrame,
+    normalizing case inconsistencies and handling missing values.
 
-# Create a DataFrame
-df = pd.DataFrame(ventilation, columns=['Mechanical ventilation (incl CPAP)'])
+    Parameters:
+    df (pandas.DataFrame): The input DataFrame.
+    column (str): The name of the column to one-hot encode.
 
-# Normalize case to handle inconsistencies
-df['Mechanical ventilation (incl CPAP)'] = df['Mechanical ventilation (incl CPAP)'].str.lower()
-
-# Handle missing values and normalize 'no' entries
-df['Mechanical ventilation (incl CPAP)'].replace({'no': 'no'}, inplace=True)
-
-# Apply One-Hot Encoding
-df_encoded = pd.get_dummies(df, columns=['Mechanical ventilation (incl CPAP)'])
-
-print(df_encoded.head())
+    Returns:
+    pandas.DataFrame: The DataFrame with one-hot encoded columns.
+    """
+    if column in df.columns:
+        # Normalize case to handle inconsistencies
+        df[column] = df[column].str.lower()
+        
+        # Handle missing values and normalize 'no' entries
+        df[column].replace({'no': 'no'}, inplace=True)
+        
+        # Apply One-Hot Encoding
+        df_encoded = pd.get_dummies(df, columns=[column])
+        
+        return df_encoded
+    else:
+        raise ValueError(f"Column '{column}' not found in DataFrame.")

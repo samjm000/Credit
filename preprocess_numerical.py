@@ -36,15 +36,21 @@ def preprocess_yes_no(df, columns):
     """
     if isinstance(columns, str):
         columns = [columns]
-    
+
     for column in columns:
         if column in df.columns:
             if not df[column].empty:
-                # Convert 'yes' to 1 and 'no' to 0
-                df[column] = df[column].map({'yes': 1, 'no': 0})
+                # Ensure the column is treated as string before applying string methods
+                df[column] = df[column].astype(str).str.strip().str.lower()
+                
+                # Map 'yes' to 1, 'no' to 0, leave other values untouched
+                df[column] = df[column].map({'yes': 1, 'no': 0}, na_action='ignore')
+                
                 # Fill missing values with 0
                 df[column].fillna(0, inplace=True)
     return df
+
+
 
 def preprocess_mode(df, columns):
     """
@@ -52,7 +58,7 @@ def preprocess_mode(df, columns):
 
     Parameters:
     df (pandas.DataFrame): The DataFrame containing the data.
-    columns (str or list): A column name or list of column names to preprocess.
+    columns (list): A list of column names to preprocess.
 
     Returns:
     pandas.DataFrame: The modified DataFrame with missing values filled.
@@ -60,6 +66,10 @@ def preprocess_mode(df, columns):
     if isinstance(columns, str):
         columns = [columns]
     
+    for column in columns:
+        if column in df.columns:
+            if not df[column].empty:
+                # Fill missing values with the mode
     for column in columns:
         if column in df.columns:
             if not df[column].empty:
@@ -75,14 +85,11 @@ def preprocess_mean(df, columns):
 
     Parameters:
     df (pandas.DataFrame): The DataFrame containing the data.
-    columns (str or list): A column name or list of numerical column names to preprocess.
+    columns (list): A list of numerical column names to preprocess.
 
     Returns:
     pandas.DataFrame: The modified DataFrame with missing values filled with the mean.
     """
-    if isinstance(columns, str):
-        columns = [columns]
-    
     for column in columns:
         if column in df.columns:
             # Fill missing values with the mean
@@ -90,30 +97,27 @@ def preprocess_mean(df, columns):
             df[column].fillna(mean_value, inplace=True)
     return df
 
+def replace_negatives_with_average(df, column):
+    """
+    Replaces negative values in the specified column with the average of the non-negative values.
+
+    Parameters:
+    df (pandas.DataFrame): The DataFrame containing the data.
+    column (str): The name of the column to preprocess.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with negative values replaced by the average of non-negative values.
+    """
+    if column in df.columns:
+        # Calculate the average of non-negative values
+        non_negative_mean = df[df[column] >= 0][column].mean()
+
+        # Replace negative values with the calculated average
+        df[column] = df[column].apply(lambda x: non_negative_mean if x < 0 else x)
+    
+    return df
+
 if __name__ == "__main__":
     # Example usage
-    data = {
-        'Sex': ['M', 'F', None, 'F', 'M'],
-        'TimeBetweenLastTreatmentAndAdmission': [5, 10, None, 8, 12],
-        'AnotherNumericFeature': [1.5, 2.0, 2.5, None, 3.0],
-        'Feature1': ['yes', 'no', None, 'no'],
-        'Feature2': ['no', 'yes', 'no', None]
-    }
-    df = pd.DataFrame(data)
-
-    # Preprocess the 'Sex' column
-    df = preprocess_sex(df, 'Sex')
-
-    # Preprocess the specified numerical columns with mean imputation
-    numeric_columns = ['TimeBetweenLastTreatmentAndAdmission', 'AnotherNumericFeature']
-    df = preprocess_mean(df, numeric_columns)
-
-    # Preprocess the specified yes/no columns
-    yes_no_columns = ['Feature1', 'Feature2']
-    df = preprocess_yes_no(df, yes_no_columns)
-
-    # Preprocess the specified categorical columns with mode imputation (not yes/no)
-    mode_columns = []  # Add any additional columns needing mode imputation
-    df = preprocess_mode(df, mode_columns)
-
-    print(df)
+    print("test")
+  
