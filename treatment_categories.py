@@ -14,7 +14,7 @@ def encode_treatment_categories(df, column_name):
     pandas.DataFrame: The DataFrame with one-hot encoded treatment categories.
     """
     # Handle missing values by replacing '0' and None with 'Unknown'
-    df[column_name].replace(['0', None], 'Unknown', inplace=True)
+    df[column_name] = df[column_name].replace(['0', None], 'Unknown')
     
     # Apply One-Hot Encoding
     df_encoded = pd.get_dummies(df, columns=[column_name])

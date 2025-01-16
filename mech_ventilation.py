@@ -17,7 +17,7 @@ def one_hot_encode(df, column):
         df[column] = df[column].str.lower()
         
         # Handle missing values and normalize 'no' entries
-        df[column].replace({'no': 'no'}, inplace=True)
+        df[column] = df[column].replace({'no': 'no'})
         
         # Apply One-Hot Encoding
         df_encoded = pd.get_dummies(df, columns=[column])
