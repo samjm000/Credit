@@ -65,11 +65,8 @@ def missing_binary(df, columns):
         columns = [columns]
 
     for column in columns:
-        if column in df.columns:
-            if not df[column].empty:
-                # Ensure the column is treated as string before applying string methods
-                df[column] = df[column].astype(str).str.strip().str.lower()
-                # Fill missing values with 0
+        if column in df.columns and not df[column].empty:
+            if not df[column].empty:    # Fill missing values with 0                
                 df[column].fillna(0, inplace=True)
     return df
 
@@ -110,7 +107,7 @@ def preprocess_mean(df, columns):
     for column in columns:
         if column in df.columns:
             # Fill missing values with the mean
-            mean_value = df[column].mean()
+            mean_value = round(df[column].mean())
             df[column].fillna(mean_value, inplace=True)
     return df
 
@@ -136,5 +133,16 @@ def replace_negatives_with_average(df, column):
 
 if __name__ == "__main__":
     # Example usage
-    print("test")
-  
+    print("test binary")
+
+    test_cases = {
+        "patient_id" : [123,456,789,198,876,654,432,345,745,999],
+        "binary_sequence_missing" : [1,0,0,1,1,1,None,1,None,0]
+        }
+
+    test_dataframe = pd.DataFrame(test_cases)
+    print(f"Before: {test_dataframe}")
+    test_dataframe = missing_binary(test_dataframe, "binary_sequence_missing")
+    print(f"After: {test_dataframe}")
+
+    

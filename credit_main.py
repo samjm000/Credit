@@ -39,7 +39,11 @@ data = preprocess_numerical.preprocess_mode(data, "Final NEWS 2 score Before Cri
 #Impute temperature columns with Mode
 data = preprocess_numerical.preprocess_mode(data, ['Highest Temp in preceding 8 hours', 'Lowest Temp in preceding 8 hours'])
 #Impute MAP with Mean
+print(data['Final HR before Critical Care admission'].iloc[0:5])
+print(data['MAP'].iloc[0:5])
 data = preprocess_numerical.preprocess_mean(data, ['MAP', 'Final HR before Critical Care admission'])
+print(data['Final HR before Critical Care admission'].iloc[0:5])
+print(data['MAP'].iloc[0:5])
 #YES / No  Imputations
 data = preprocess_numerical.preprocess_yes_no(data, ['Cardiac arrest_1','Cardiac arrest_2','Direct admission from theatre?','Features of sepsis?', 'Haemodialysis /CRRT', 'AKI y/n', 'Acute renal failure_2','Survival 6 months post crit care'])
 #Impute CC Missing observations with Mean
