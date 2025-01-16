@@ -114,6 +114,8 @@ def preprocess_mean(df, columns):
     
     for column in columns:
         if column in df.columns:
+            # Ensure all values are numeric, convert non-numeric to NaN 
+            df[column] = pd.to_numeric(df[column], errors='coerce')
             # Calculate the mean of the column, ignoring NaNs
             mean_value = df[column].mean()
             
