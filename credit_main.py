@@ -29,7 +29,7 @@ data = diagnostic_categories.encode_diagnostic_categories(data, "Diagnosis categ
 #Most Recent Oncological Treatment one hot encoding
 data = treatment_categories.encode_treatment_categories(data, "Most recent oncological treatment")
 #Treatment to Admission Time handling
-data = preprocess_numerical.preprocess_mean(data, "Time between last treatment and admission")
+data = preprocess_numerical.missing_binary(data, "Anticancer Therapy with 6 weeks")
 #Admission Reason
 data = reason_for_admission.encode_reason_for_admission(data, "Reason for admission to hospital")
 #Surgical or Medical Cause of admission

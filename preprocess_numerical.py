@@ -50,7 +50,28 @@ def preprocess_yes_no(df, columns):
                 df[column].fillna(0, inplace=True)
     return df
 
+def missing_binary(df, columns):
+    """
+    If within 1 or 0 is missing, fills missing values with 0 in the specified columns of the DataFrame.
 
+    Parameters:
+    df (pandas.DataFrame): The DataFrame containing the data.
+    columns (str or list): A column name or list of column names to preprocess.
+
+    Returns:
+    pandas.DataFrame: The modified DataFrame with converted and filled values in the specified columns.
+    """
+    if isinstance(columns, str):
+        columns = [columns]
+
+    for column in columns:
+        if column in df.columns:
+            if not df[column].empty:
+                # Ensure the column is treated as string before applying string methods
+                df[column] = df[column].astype(str).str.strip().str.lower()
+                # Fill missing values with 0
+                df[column].fillna(0, inplace=True)
+    return df
 
 def preprocess_mode(df, columns):
     """
@@ -67,16 +88,12 @@ def preprocess_mode(df, columns):
         columns = [columns]
     
     for column in columns:
-        if column in df.columns:
-            if not df[column].empty:
-                # Fill missing values with the mode
-    for column in columns:
-        if column in df.columns:
-            if not df[column].empty:
-                # Fill missing values with the mode
-                mode_value = df[column].mode().iloc[0] if not df[column].mode().empty else None
-                if mode_value is not None:
-                    df[column].fillna(mode_value, inplace=True)
+        if column in df.columns and not df[column].empty:
+            # Fill missing values with the mode (whilst checking there is a mode)
+            mode_value = df[column].mode().iloc[0] if not df[column].mode().empty else None
+            if mode_value is not None:
+                df[column].fillna(mode_value, inplace=True)
+                
     return df
 
 def preprocess_mean(df, columns):
