@@ -1,6 +1,6 @@
 import pandas as pd
 #Import dataset handlers
-import encoder_treatment_categories, medical_or_surgical
+import encoder_treatment_categories, encoder_medical_or_surgical
 import encoder_diagnostic_categories, encoder_ps, encoder_reason_for_admission, encoder_mech_ventilation
 import export_to_excel
 import pre_process_numerical
@@ -28,7 +28,7 @@ data = pre_process_numerical.missing_binary(data, "Anticancer Therapy with 6 wee
 #Admission Reason
 data = encoder_reason_for_admission.encode_reason_for_admission(data, "Reason for admission to hospital")
 #Surgical or Medical Cause of admission
-data = medical_or_surgical.encode_and_impute(data, "Surgical or medical")
+data = encoder_medical_or_surgical.encode_and_impute(data, "Surgical or medical")
 #Impute NEWS score prior to admission
 data = pre_process_numerical.preprocess_mode(data, "Final NEWS 2 score Before Critical Care admission")
 #Impute temperature columns with Mode
