@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, roc_auc_score, classification_report, confusion_matrix
+from sklearn.model_selection import GridSearchCV
 import matplotlib.pyplot as plt
 from sklearn.tree import export_graphviz
 import graphviz
@@ -35,12 +36,6 @@ non_numeric_predictors = predictors.select_dtypes(exclude="number")
 # Check if numeric_predictors is empty
 if numeric_predictors.empty:
     raise ValueError("The numeric_predictors DataFrame is empty. Please check your data loading and preprocessing steps.")
-
-# Impute missing values in numeric predictor variables only
-imputer = SimpleImputer(strategy="median")
-numeric_predictors = pd.DataFrame(
-    imputer.fit_transform(numeric_predictors), columns=numeric_predictors.columns
-)
 
 # Combine back the numeric and non-numeric predictors
 predictors = pd.concat(
@@ -114,7 +109,7 @@ def train_and_evaluate_rf(X, y, outcome_name, best_params):
     model = RandomForestClassifier(**best_params, random_state=42)
 
     # Train the model
-    model.fit(X_train, y_train)
+    rf_model.fit(X_train, y_train)
 
     # Predict on the test set
     y_pred = model.predict(X_test)
@@ -159,13 +154,35 @@ def train_and_evaluate_rf(X, y, outcome_name, best_params):
     plt.ylabel("Features", fontsize=14)
     plt.grid(axis="x", linestyle="--", alpha=0.7)
     plt.tight_layout()
+    # # Feature importance
+    # feature_importances = pd.Series(rf_model.feature_importances_, index=X.columns)
+    # feature_importances.nlargest(10).plot(kind="barh")
+    # plt.title(f"Top Features for {outcome_name}")
+    # plt.show()
+
+        # Feature importance plot with enhanced aesthetics
+    feature_importances = pd.Series(rf_model.feature_importances_, index=X.columns)
+    top_features = feature_importances.nlargest(10)
+    
+    plt.figure(figsize=(10, 6))
+    top_features.sort_values().plot(kind="barh", color="skyblue", edgecolor="black")
+    plt.title(f"Top Features for {outcome_name}", fontsize=16)
+    plt.xlabel("Importance", fontsize=14)
+    plt.ylabel("Features", fontsize=14)
+    plt.xticks(fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.grid(axis="x", linestyle="--", alpha=0.7)
+    plt.tight_layout()  # Adjust layout to avoid cropping
     plt.show()
 
 
+    return rf_model, X_train, y_train  # Return model and training data for further use
+
+
 # Train and evaluate with the best parameters for each outcome
-train_and_evaluate_rf(predictors_scaled1, outcome1, outcome_column1, best_params_outcome1)
-train_and_evaluate_rf(predictors_scaled2, outcome2, outcome_column2, best_params_outcome2)
-train_and_evaluate_rf(predictors_scaled3, outcome3, outcome_column3, best_params_outcome3)
+model1, X_train1, y_train1 = train_and_evaluate_rf(predictors_scaled1, outcome1, outcome_column1, best_params_outcome1)
+model2, X_train2, y_train2 = train_and_evaluate_rf(predictors_scaled2, outcome2, outcome_column2, best_params_outcome2)
+model3, X_train3, y_train3 = train_and_evaluate_rf(predictors_scaled3, outcome3, outcome_column3, best_params_outcome3)
 
 
 def visualize_single_tree(model, X, outcome_name, tree_index=0):
@@ -188,3 +205,35 @@ def visualize_single_tree(model, X, outcome_name, tree_index=0):
 
 
 
+
+# Grid Search for Hyperparameter Tuning
+
+# Define parameter grid for Grid Search
+param_grid = {
+    'n_estimators': [100, 200, 300],
+    'max_depth': [10, 20, 30],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4]
+}
+
+# Function to perform Grid Search
+def grid_search_tuning(X_train, y_train, outcome_name):
+    print(f"Grid search for {outcome_name}...")
+
+    # Initialize Grid Search
+    grid_search = GridSearchCV(estimator=RandomForestClassifier(random_state=42), param_grid=param_grid, cv=5, n_jobs=-1, verbose=2, scoring='roc_auc')
+
+    # Fit Grid Search to training data
+    grid_search.fit(X_train, y_train)
+
+    # Best parameters and score
+    best_params = grid_search.best_params_
+    best_score = grid_search.best_score_
+
+    print(f"Best Parameters for {outcome_name}: {best_params}")
+    print(f"Best ROC AUC Score for {outcome_name}: {best_score:.4f}")
+
+# Perform Grid Search for each outcome
+grid_search_tuning(X_train1, y_train1, outcome_column1)
+grid_search_tuning(X_train2, y_train2, outcome_column2)
+grid_search_tuning(X_train3, y_train3, outcome_column3)
