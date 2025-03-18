@@ -84,7 +84,7 @@ How to Use
 Clone the repository:
 bash
 Copy code
-git clone https://github.com/samjm000/Adam-Project.git
+git clone https://github.com/samjm000/Credit.git
 Install the required dependencies:
 bash
 Copy code
