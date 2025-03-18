@@ -95,17 +95,16 @@ def evaluate_model(model, X_test, y_test, outcome_column, feature_names):
         plt.legend()
         figures['roc_curve'] = fig_roc
 
-
-
-        fig_roc = plt.figure(figsize=(8, 6))
-        fpr, tpr, _ = roc_curve(y_test, y_prob)
-        plt.plot(fpr, tpr, label=f'ROC Curve (AUC = {roc_auc:.4f})')
-        plt.plot([0, 1], [0, 1], 'k--', label='Random')
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title(f'ROC Curve - {outcome_column}')
-        plt.legend()
-        figures['roc_curve'] = fig_roc
+        #Non Smoothed ROC curve
+        # fig_roc = plt.figure(figsize=(8, 6))
+        # fpr, tpr, _ = roc_curve(y_test, y_prob)
+        # plt.plot(fpr, tpr, label=f'ROC Curve (AUC = {roc_auc:.4f})')
+        # plt.plot([0, 1], [0, 1], 'k--', label='Random')
+        # plt.xlabel('False Positive Rate')
+        # plt.ylabel('True Positive Rate')
+        # plt.title(f'ROC Curve - {outcome_column}')
+        # plt.legend()
+        # figures['roc_curve'] = fig_roc
     
     # Feature importance
     fig_imp = plt.figure(figsize=(12, 8))
@@ -113,7 +112,7 @@ def evaluate_model(model, X_test, y_test, outcome_column, feature_names):
         'Feature': feature_names,
         'Importance': model.feature_importances_
     })
-    top_features = feature_importances.sort_values('Importance', ascending=False).head(20)
+    top_features = feature_importances.sort_values('Importance', ascending=False).head(10)
     sns.barplot(x='Importance', y='Feature', data=top_features)
     plt.title(f'{outcome_column}')
     plt.tight_layout()
