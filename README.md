@@ -18,7 +18,7 @@ This repository contains the implementation of a machine learning methodology fo
 This project applies a Random Forest classifier to validate the CREDIT Score by modeling the relationships between patient characteristics and clinical outcomes. The primary outcomes assessed include:
 - **Survival six months after ICU/critical care admission**
 - **Return to anticancer therapy (ACT)**
-- **ECOG PS greater than 2**
+- **ECOG PS less than or equal to 2 (0-1-2)**
 
 The methodology includes robust data preparation, preprocessing, model training, and validation to ensure accuracy and reliability.
 
